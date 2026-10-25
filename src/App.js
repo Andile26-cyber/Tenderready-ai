@@ -1,9 +1,19 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 
-// Replace with your API Gateway URL
-const API_ENDPOINT = 'https://YOUR_API_ID.execute-api.YOUR_REGION.amazonaws.com/prod/scan';
+// Replace with your real AWS API Gateway URL.
+const API_ENDPOINT =
+    'https://YOUR_API_ID.execute-api.YOUR_REGION.amazonaws.com/prod/scan';
 
-// Main App
+const INITIAL_CHECKLIST = [
+    { id: 1, name: 'Company Registration Documents', found: false },
+    { id: 2, name: 'Tax Clearance Certificate (SARS)', found: false },
+    { id: 3, name: 'B-BBEE Certificate / Affidavit', found: false },
+    { id: 4, name: 'Pricing Schedule (Completed)', found: false },
+    { id: 5, name: 'Signed Declaration of Interest', found: false },
+    { id: 6, name: 'Reference Letters (3x)', found: false }
+];
+
 export default function App() {
     const [showSplash, setShowSplash] = useState(true);
     const [page, setPage] = useState('login');
@@ -16,7 +26,6 @@ export default function App() {
 
     return (
         <>
-            {/* Loading */}
             <div className={`loading-screen ${!showSplash ? 'hidden' : ''}`}>
                 <div className="loading-inner">
                     <h1>Tender<span>Ready</span> AI</h1>
@@ -25,36 +34,41 @@ export default function App() {
                 </div>
             </div>
 
-            {/* Top bar */}
             <header className={`top-bar ${page === 'dashboard' ? 'hidden' : ''}`}>
                 <div className="brand">TenderReady AI</div>
-                <button className="login-btn" onClick={() => setPage('login')}>Login</button>
+                <button className="login-btn" onClick={() => setPage('login')}>
+                    Login
+                </button>
             </header>
 
-            {/* Auth */}
             {page !== 'dashboard' && (
                 <AuthScreen
                     page={page}
-                    onLogin={(e) => { e.preventDefault(); setPage('dashboard'); }}
+                    onLogin={(e) => {
+                        e.preventDefault();
+                        setPage('dashboard');
+                    }}
                     goToRegister={() => setPage('register')}
                     goToLogin={() => setPage('login')}
                     onClose={() => setPage('login')}
                 />
             )}
 
-            {/* Dashboard */}
             {page === 'dashboard' && (
                 <DashboardScreen
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
-                    onLogout={() => { setPage('login'); setActiveTab('overview'); }}
+                    onLogout={() => {
+                        setPage('login');
+                        setActiveTab('overview');
+                    }}
                 />
             )}
         </>
     );
 }
 
-// Login / Register
+// LOGIN AND REGISTER
 function AuthScreen({ page, onLogin, goToRegister, goToLogin, onClose }) {
     const isRegister = page === 'register';
 
@@ -64,7 +78,6 @@ function AuthScreen({ page, onLogin, goToRegister, goToLogin, onClose }) {
                 <ion-icon name="close"></ion-icon>
             </div>
 
-            {/* Login */}
             <div className="auth-panel login-panel">
                 <h2>Login</h2>
                 <form onSubmit={onLogin}>
@@ -80,20 +93,27 @@ function AuthScreen({ page, onLogin, goToRegister, goToLogin, onClose }) {
                     </div>
                     <div className="form-extras">
                         <label><input type="checkbox" /> Remember me</label>
-                        <a href="#">Forgot Password?</a>
+                        <a href="#" onClick={(e) => e.preventDefault()}>
+                            Forgot Password?
+                        </a>
                     </div>
                     <button type="submit" className="primary-btn">Login</button>
                     <div className="switch-link">
                         Don't have an account?{' '}
-                        <a href="#" onClick={(e) => { e.preventDefault(); goToRegister(); }}>Sign Up</a>
+                        <a href="#" onClick={(e) => {
+                            e.preventDefault();
+                            goToRegister();
+                        }}>Sign Up</a>
                     </div>
                 </form>
             </div>
 
-            {/* Register */}
             <div className="auth-panel register-panel">
                 <h2>Sign Up</h2>
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    alert('Registration requires an authentication backend.');
+                }}>
                     <div className="input-field">
                         <ion-icon name="person"></ion-icon>
                         <input type="text" required />
@@ -110,12 +130,15 @@ function AuthScreen({ page, onLogin, goToRegister, goToLogin, onClose }) {
                         <label>Password</label>
                     </div>
                     <div className="form-extras">
-                        <label><input type="checkbox" /> I agree to the terms</label>
+                        <label><input type="checkbox" required /> I agree to the terms</label>
                     </div>
                     <button type="submit" className="primary-btn">Sign Up</button>
                     <div className="switch-link">
                         Already have an account?{' '}
-                        <a href="#" onClick={(e) => { e.preventDefault(); goToLogin(); }}>Login</a>
+                        <a href="#" onClick={(e) => {
+                            e.preventDefault();
+                            goToLogin();
+                        }}>Login</a>
                     </div>
                 </form>
             </div>
@@ -123,7 +146,7 @@ function AuthScreen({ page, onLogin, goToRegister, goToLogin, onClose }) {
     );
 }
 
-// Dashboard
+// DASHBOARD
 function DashboardScreen({ activeTab, setActiveTab, onLogout }) {
     return (
         <div className="dashboard open">
@@ -131,28 +154,20 @@ function DashboardScreen({ activeTab, setActiveTab, onLogout }) {
                 <div className="dash-brand">Tender<span>Ready</span></div>
 
                 <div className="dash-tabs">
-                    <button
-                        className={activeTab === 'overview' ? 'active' : ''}
-                        onClick={() => setActiveTab('overview')}
-                    >
+                    <button className={activeTab === 'overview' ? 'active' : ''}
+                        onClick={() => setActiveTab('overview')}>
                         <ion-icon name="grid-outline"></ion-icon> Overview
                     </button>
-                    <button
-                        className={activeTab === 'company' ? 'active' : ''}
-                        onClick={() => setActiveTab('company')}
-                    >
+                    <button className={activeTab === 'company' ? 'active' : ''}
+                        onClick={() => setActiveTab('company')}>
                         <ion-icon name="business-outline"></ion-icon> Company
                     </button>
-                    <button
-                        className={activeTab === 'documents' ? 'active' : ''}
-                        onClick={() => setActiveTab('documents')}
-                    >
+                    <button className={activeTab === 'documents' ? 'active' : ''}
+                        onClick={() => setActiveTab('documents')}>
                         <ion-icon name="folder-open-outline"></ion-icon> Documents
                     </button>
-                    <button
-                        className={activeTab === 'tenders' ? 'active' : ''}
-                        onClick={() => setActiveTab('tenders')}
-                    >
+                    <button className={activeTab === 'tenders' ? 'active' : ''}
+                        onClick={() => setActiveTab('tenders')}>
                         <ion-icon name="briefcase-outline"></ion-icon> Tenders
                     </button>
                 </div>
@@ -170,26 +185,24 @@ function DashboardScreen({ activeTab, setActiveTab, onLogout }) {
     );
 }
 
-// Overview tab
+// DOCUMENT SCANNER AND OVERVIEW
 function OverviewTab() {
     const [file, setFile] = useState(null);
     const [scanState, setScanState] = useState('idle');
     const [scanError, setScanError] = useState(null);
+    const [summary, setSummary] = useState(null);
+    const [extractedText, setExtractedText] = useState('');
     const fileInputRef = useRef(null);
 
     const [messages, setMessages] = useState([
-        { sender: 'ai', text: 'Hello! Upload a tender document and I will scan it for the required items.' }
+        {
+            sender: 'ai',
+            text: 'Hello! Upload a tender document and I will scan it for the required items.'
+        }
     ]);
     const [inputText, setInputText] = useState('');
 
-    const [checklist, setChecklist] = useState([
-        { id: 1, name: 'Company Registration Documents', found: false },
-        { id: 2, name: 'Tax Clearance Certificate (SARS)', found: false },
-        { id: 3, name: 'B-BBEE Certificate / Affidavit', found: false },
-        { id: 4, name: 'Pricing Schedule (Completed)', found: false },
-        { id: 5, name: 'Signed Declaration of Interest', found: false },
-        { id: 6, name: 'Reference Letters (3x)', found: false }
-    ]);
+    const [checklist, setChecklist] = useState(INITIAL_CHECKLIST);
 
     const foundCount = checklist.filter(item => item.found).length;
     const totalCount = checklist.length;
@@ -197,12 +210,28 @@ function OverviewTab() {
     const completionPercent = Math.round((foundCount / totalCount) * 100);
 
     const pickFile = (e) => {
-        const selected = e.target.files[0];
+        const selected = e.target.files?.[0];
         if (!selected) return;
+
+        if (selected.type !== 'application/pdf' &&
+            !selected.name.toLowerCase().endsWith('.pdf')) {
+            setScanError('Please select a PDF document.');
+            e.target.value = '';
+            return;
+        }
+
+        if (selected.size > 10 * 1024 * 1024) {
+            setScanError('The PDF must not exceed 10MB.');
+            e.target.value = '';
+            return;
+        }
+
         setFile(selected);
         setScanState('idle');
         setScanError(null);
-        setChecklist(prev => prev.map(item => ({ ...item, found: false })));
+        setSummary(null);
+        setExtractedText('');
+        setChecklist(INITIAL_CHECKLIST);
     };
 
     const clearFile = (e) => {
@@ -210,19 +239,32 @@ function OverviewTab() {
         setFile(null);
         setScanState('idle');
         setScanError(null);
-        setChecklist(prev => prev.map(item => ({ ...item, found: false })));
-        if (fileInputRef.current) fileInputRef.current.value = null;
+        setSummary(null);
+        setExtractedText('');
+        setChecklist(INITIAL_CHECKLIST);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     };
 
+    // Send the actual PDF to AWS API Gateway.
     const scanDocument = async () => {
         if (!file) {
-            alert('Please upload a PDF first.');
+            setScanError('Please upload a PDF first.');
+            return;
+        }
+
+        if (API_ENDPOINT.includes('YOUR_API_ID')) {
+            setScanError('Configure your real AWS API Gateway URL first.');
             return;
         }
 
         setScanState('scanning');
         setScanError(null);
-        setChecklist(prev => prev.map(item => ({ ...item, found: false })));
+        setSummary(null);
+        setExtractedText('');
+        setChecklist(INITIAL_CHECKLIST);
 
         try {
             const formData = new FormData();
@@ -233,30 +275,57 @@ function OverviewTab() {
                 body: formData
             });
 
-            if (!response.ok) throw new Error(`Server returned ${response.status}`);
+            const data = await response.json().catch(() => ({}));
 
-            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(
+                    data.message || data.error ||
+                    `AWS returned HTTP ${response.status}`
+                );
+            }
 
-            if (!data.results || !Array.isArray(data.results)) {
-                throw new Error('Invalid response format');
+            if (!Array.isArray(data.results)) {
+                throw new Error(
+                    'Unexpected AWS response. Expected a results array.'
+                );
             }
 
             setChecklist(prev => prev.map(item => {
-                const result = data.results.find(r => r.id === item.id);
-                return result ? { ...item, found: result.found } : item;
+                const result = data.results.find(
+                    r => Number(r.id) === item.id
+                );
+
+                return result
+                    ? { ...item, found: result.found === true }
+                    : item;
             }));
+
+            setSummary(data.summary || null);
+            setExtractedText(
+                typeof data.extractedText === 'string'
+                    ? data.extractedText
+                    : ''
+            );
 
             setScanState('complete');
 
-            const found = data.results.filter(r => r.found).length;
-            setMessages(prev => [...prev, {
-                sender: 'ai',
-                text: `Scan complete. I found ${found} of ${data.results.length} required documents.`
-            }]);
+            const found = data.results.filter(
+                r => r.found === true
+            ).length;
 
-        } catch (err) {
-            console.error('Scan failed:', err);
-            setScanError('Could not reach the scanning service. Check your connection and try again.');
+            setMessages(prev => [
+                ...prev,
+                {
+                    sender: 'ai',
+                    text: `Scan complete. ${found} of ${data.results.length} requirements were identified as found.`
+                }
+            ]);
+        } catch (error) {
+            console.error('Document scan failed:', error);
+            setScanError(
+                error.message ||
+                'Could not reach the scanning service. Please try again.'
+            );
             setScanState('idle');
         }
     };
@@ -267,36 +336,77 @@ function OverviewTab() {
         ));
     };
 
+    // Answers basic questions using the returned document data.
     const sendMessage = (e) => {
         e.preventDefault();
-        if (!inputText.trim()) return;
 
-        setMessages(prev => [...prev, { sender: 'user', text: inputText }]);
-        const question = inputText.toLowerCase();
+        const question = inputText.trim();
+        if (!question) return;
+
+        setMessages(prev => [
+            ...prev,
+            { sender: 'user', text: question }
+        ]);
         setInputText('');
 
-        setTimeout(() => {
-            let reply = 'Based on the document, ';
-            if (question.includes('missing')) {
-                reply += scanState === 'complete'
-                    ? `you are missing ${missingCount} document(s).`
-                    : 'please scan a document first.';
-            } else if (question.includes('date')) {
-                reply += 'the closing date is 31 November 2024 at 11:00 AM.';
-            } else {
-                reply += 'please upload and scan a document first.';
-            }
-            setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
-        }, 800);
+        let reply;
+
+        if (scanState !== 'complete') {
+            reply = 'Please upload and scan a tender document first.';
+        } else if (/closing date|deadline|due date/i.test(question)) {
+            reply = summary?.closingDate
+                ? `The closing date extracted from the document is ${summary.closingDate}.`
+                : 'No closing date was identified in the returned summary.';
+        } else if (/reference|rfq number|tender number/i.test(question)) {
+            reply = summary?.reference
+                ? `The tender reference is ${summary.reference}.`
+                : 'No tender reference was identified.';
+        } else if (/title|name of tender/i.test(question)) {
+            reply = summary?.title
+                ? `The tender title is ${summary.title}.`
+                : 'No tender title was identified.';
+        } else if (/missing|required documents/i.test(question)) {
+            const missing = checklist.filter(item => !item.found);
+            reply = missing.length
+                ? `Requirements currently marked as missing: ${missing.map(item => item.name).join(', ')}.`
+                : 'All checklist items are currently marked as found.';
+        } else if (extractedText) {
+            const terms = question.toLowerCase().split(/\s+/)
+                .filter(word => word.length > 3);
+            const relevantLines = extractedText.split(/\n/)
+                .filter(line => terms.some(term =>
+                    line.toLowerCase().includes(term)
+                ))
+                .slice(0, 5);
+
+            reply = relevantLines.length
+                ? `Relevant text from the scanned document:\n${relevantLines.join('\n')}`
+                : 'I could not find a matching passage in the extracted text. A document-aware AI backend is needed to answer more complex questions.';
+        } else {
+            reply = 'The scan completed, but AWS did not return extracted text for searching.';
+        }
+
+        setMessages(prev => [
+            ...prev,
+            { sender: 'ai', text: reply }
+        ]);
     };
 
     return (
         <>
             <div className="metrics">
-                <MetricCard icon="documents-outline" color="blue" value="12" label="Tenders Submitted" />
-                <MetricCard icon="trophy-outline" color="green" value="4" label="Tenders Awarded" />
-                <MetricCard icon="shield-checkmark-outline" color="orange" value="Level 1" label="B-BBEE Status" />
-                <MetricCard icon="alert-circle-outline" color="red" value={scanState === 'complete' ? missingCount : '—'} label="Missing Documents" />
+                <MetricCard icon="documents-outline" color="blue"
+                    value={summary?.tendersSubmitted ?? '—'}
+                    label="Tenders Submitted" />
+                <MetricCard icon="trophy-outline" color="green"
+                    value={summary?.tendersAwarded ?? '—'}
+                    label="Tenders Awarded" />
+                <MetricCard icon="shield-checkmark-outline" color="orange"
+                    value={summary?.bbbeeStatus || '—'}
+                    label="B-BBEE Status" />
+                <MetricCard icon="alert-circle-outline" color="red"
+                    value={scanState === 'complete' ? missingCount : '—'}
+                    label="Missing Documents" />
             </div>
 
             {scanError && (
@@ -307,15 +417,25 @@ function OverviewTab() {
 
             <div className="card">
                 <div className="card-title">
-                    <ion-icon name="cloud-upload-outline"></ion-icon> Upload Tender Document
+                    <ion-icon name="cloud-upload-outline"></ion-icon>
+                    Upload Tender Document
                 </div>
 
-                <div className="upload-area" onClick={() => fileInputRef.current.click()}>
+                <div className="upload-area"
+                    onClick={() => fileInputRef.current?.click()}>
                     {file ? (
                         <>
-                            <ion-icon name="document-text" style={{ fontSize: '3em', color: '#4caf50' }}></ion-icon>
-                            <p style={{ color: '#4caf50', fontWeight: 'bold' }}>File Selected</p>
-                            <button className="remove-file" onClick={clearFile}>
+                            <ion-icon name="document-text"
+                                style={{ fontSize: '3em', color: '#4caf50' }}>
+                            </ion-icon>
+                            <p style={{ color: '#4caf50', fontWeight: 'bold' }}>
+                                {file.name}
+                            </p>
+                            <p className="hint">
+                                {(file.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                            <button type="button" className="remove-file"
+                                onClick={clearFile}>
                                 <ion-icon name="close"></ion-icon>
                             </button>
                         </>
@@ -326,17 +446,26 @@ function OverviewTab() {
                             <p className="hint">Supported format: PDF (Max 10MB)</p>
                         </>
                     )}
-                    <input type="file" ref={fileInputRef} hidden accept=".pdf" onChange={pickFile} />
+
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        hidden
+                        accept=".pdf,application/pdf"
+                        onChange={pickFile}
+                    />
                 </div>
 
                 <div style={{ marginTop: '15px', textAlign: 'right' }}>
-                    <button
-                        className="primary-btn"
+                    <button className="primary-btn"
                         style={{ width: 'auto', padding: '0 25px' }}
                         onClick={scanDocument}
-                        disabled={!file || scanState === 'scanning'}
-                    >
-                        {scanState === 'scanning' ? 'Scanning...' : scanState === 'complete' ? 'Re-scan Document' : 'Scan Document'}
+                        disabled={!file || scanState === 'scanning'}>
+                        {scanState === 'scanning'
+                            ? 'Scanning...'
+                            : scanState === 'complete'
+                                ? 'Re-scan Document'
+                                : 'Scan Document'}
                     </button>
                 </div>
             </div>
@@ -344,7 +473,8 @@ function OverviewTab() {
             {scanState === 'scanning' && (
                 <div className="card">
                     <div className="card-title">
-                        <ion-icon name="checkbox-outline"></ion-icon> Analyzing Document
+                        <ion-icon name="checkbox-outline"></ion-icon>
+                        Analyzing Document
                     </div>
                     <div className="scanning-box">
                         <div className="small-spinner"></div>
@@ -357,8 +487,10 @@ function OverviewTab() {
             {scanState === 'complete' && (
                 <div className="card">
                     <div className="card-title">
-                        <ion-icon name="checkbox-outline"></ion-icon> Requirements Checklist
-                        <span className={`badge ${missingCount > 0 ? 'pending' : 'verified'}`} style={{ marginLeft: 'auto' }}>
+                        <ion-icon name="checkbox-outline"></ion-icon>
+                        Requirements Checklist
+                        <span className={`badge ${missingCount > 0 ? 'pending' : 'verified'}`}
+                            style={{ marginLeft: 'auto' }}>
                             {missingCount > 0 ? `${missingCount} Missing` : 'All Found'}
                         </span>
                     </div>
@@ -371,25 +503,38 @@ function OverviewTab() {
                     <ul className="checklist-items">
                         {checklist.map(item => (
                             <li key={item.id}>
-                                <input type="checkbox" checked={item.found} onChange={() => toggleItem(item.id)} />
-                                <span className={`item-name ${item.found ? 'done' : ''}`}>{item.name}</span>
+                                <input type="checkbox"
+                                    checked={item.found}
+                                    onChange={() => toggleItem(item.id)} />
+                                <span className={`item-name ${item.found ? 'done' : ''}`}>
+                                    {item.name}
+                                </span>
                                 <span className={`status-pill ${item.found ? 'found' : 'missing'}`}>
                                     {item.found ? 'Found' : 'Missing'}
                                 </span>
                             </li>
                         ))}
                     </ul>
+                    <p className="hint">
+                        Checklist results are based on the AWS response. Verify
+                        requirements before submitting a tender.
+                    </p>
                 </div>
             )}
 
             {scanState === 'idle' && (
                 <div className="card">
                     <div className="card-title">
-                        <ion-icon name="checkbox-outline"></ion-icon> Requirements Checklist
+                        <ion-icon name="checkbox-outline"></ion-icon>
+                        Requirements Checklist
                     </div>
                     <div className="empty-state">
                         <ion-icon name="document-outline"></ion-icon>
-                        <p>Upload a tender document and click <strong>Scan Document</strong> to see which requirements are met.</p>
+                        <p>
+                            Upload a tender document and click
+                            <strong> Scan Document </strong>
+                            to see which requirements are met.
+                        </p>
                     </div>
                 </div>
             )}
@@ -397,33 +542,45 @@ function OverviewTab() {
             {scanState === 'complete' && (
                 <div className="card">
                     <div className="card-title">
-                        <ion-icon name="document-text-outline"></ion-icon> Tender Summary
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        Tender Summary
                     </div>
-                    <SummaryLine label="Tender Title" value="Supply of IT Equipment" />
-                    <SummaryLine label="Reference" value="RFQ-2024-001" />
-                    <SummaryLine label="Closing Date" value="31 Nov 2024" />
-                    <SummaryLine label="Readiness Score" value={`${completionPercent}%`} color={completionPercent >= 80 ? '#4caf50' : '#ff9800'} />
+
+                    <SummaryLine label="Tender Title"
+                        value={summary?.title || 'Not identified in document'} />
+                    <SummaryLine label="Reference"
+                        value={summary?.reference || 'Not identified in document'} />
+                    <SummaryLine label="Closing Date"
+                        value={summary?.closingDate || 'Not identified in document'} />
+                    <SummaryLine label="Readiness Score"
+                        value={`${completionPercent}%`}
+                        color={completionPercent >= 80 ? '#4caf50' : '#ff9800'} />
                 </div>
             )}
 
             <div className="card">
                 <div className="card-title">
-                    <ion-icon name="chatbubbles-outline"></ion-icon> Ask TenderReady
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                    Ask TenderReady
                 </div>
+
                 <div className="chat-box">
                     <div className="chat-messages">
                         {messages.map((msg, i) => (
-                            <div key={i} className={`message ${msg.sender}`}>{msg.text}</div>
+                            <div key={i} className={`message ${msg.sender}`}
+                                style={{ whiteSpace: 'pre-wrap' }}>
+                                {msg.text}
+                            </div>
                         ))}
                     </div>
                     <form className="chat-input" onSubmit={sendMessage}>
-                        <input
-                            type="text"
+                        <input type="text"
                             placeholder="Ask a question..."
                             value={inputText}
-                            onChange={(e) => setInputText(e.target.value)}
-                        />
-                        <button type="submit"><ion-icon name="send"></ion-icon></button>
+                            onChange={e => setInputText(e.target.value)} />
+                        <button type="submit">
+                            <ion-icon name="send"></ion-icon>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -431,100 +588,67 @@ function OverviewTab() {
     );
 }
 
-// Company tab
+// COMPANY
 function CompanyTab() {
     return (
         <div className="card">
             <div className="profile-header">
                 <div>
-                    <h2>TechSolutions Ltd.</h2>
-                    <p>Registration: 2020/123456/07</p>
+                    <h2>Company Profile</h2>
+                    <p>Connect your company records to display verified details.</p>
                 </div>
-                <span className="badge verified">Verified</span>
+                <span className="badge pending">Not Connected</span>
             </div>
-
-            <div className="profile-grid">
-                <ProfileField label="VAT Number" value="4123456789" />
-                <ProfileField label="Tax Compliance" value="Compliant" color="#4caf50" />
-                <ProfileField label="B-BBEE Level" value="Level 1 Contributor" />
-                <ProfileField label="CSD Number" value="MAAA0123456" />
-                <ProfileField label="Address" value="123 Main Rd, Sandton, JHB" />
-                <ProfileField label="Contact" value="John Doe (Director)" />
+            <div className="empty-state">
+                <ion-icon name="business-outline"></ion-icon>
+                <p>
+                    Company information will appear here when a company profile
+                    API or saved company record is connected.
+                </p>
             </div>
         </div>
     );
 }
 
-// Documents tab
+// DOCUMENTS
 function DocumentsTab() {
-    const docs = [
-        { name: 'B-BBEE Certificate', status: 'verified', date: 'Expires: 31 Dec 2024' },
-        { name: 'Tax Clearance Certificate', status: 'verified', date: 'Expires: 15 Nov 2024' },
-        { name: 'Company Registration (CIPC)', status: 'verified', date: 'Valid' },
-        { name: 'Public Liability Insurance', status: 'pending', date: 'Pending Upload' },
-        { name: 'Reference Letters', status: 'missing', date: 'Action Required' }
-    ];
-
     return (
-        <div className="doc-list">
-            {docs.map((doc, i) => (
-                <div className="doc-item" key={i}>
-                    <div className="doc-info">
-                        <ion-icon name="document-text"></ion-icon>
-                        <div>
-                            <h4>{doc.name}</h4>
-                            <p>{doc.date}</p>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span className={`badge ${doc.status}`}>
-                            {doc.status === 'verified' ? 'Verified' : doc.status === 'pending' ? 'Pending' : 'Missing'}
-                        </span>
-                        <button className="upload-doc-btn">Upload</button>
-                    </div>
-                </div>
-            ))}
+        <div className="card">
+            <div className="card-title">
+                <ion-icon name="folder-open-outline"></ion-icon>
+                Documents
+            </div>
+            <div className="empty-state">
+                <ion-icon name="document-outline"></ion-icon>
+                <p>
+                    Uploaded and verified company documents will appear here
+                    once a document storage and listing API is connected.
+                </p>
+            </div>
         </div>
     );
 }
 
-// Tenders tab
+// TENDERS
 function TendersTab() {
-    const tenders = [
-        { ref: 'RFQ-2024-001', desc: 'Supply of IT Equipment', date: '31 Nov 2024', status: 'pending' },
-        { ref: 'RFQ-2024-002', desc: 'Office Furniture', date: '15 Oct 2024', status: 'verified' },
-        { ref: 'RFQ-2023-099', desc: 'Cleaning Services', date: '01 Sep 2023', status: 'missing' }
-    ];
-
     return (
-        <table className="tenders-table">
-            <thead>
-                <tr>
-                    <th>Reference</th>
-                    <th>Description</th>
-                    <th>Closing Date</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {tenders.map((tender, i) => (
-                    <tr key={i}>
-                        <td>{tender.ref}</td>
-                        <td>{tender.desc}</td>
-                        <td>{tender.date}</td>
-                        <td>
-                            <span className={`badge ${tender.status}`}>
-                                {tender.status === 'verified' ? 'Awarded' : tender.status === 'pending' ? 'In Progress' : 'Lost'}
-                            </span>
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+        <div className="card">
+            <div className="card-title">
+                <ion-icon name="briefcase-outline"></ion-icon>
+                Tenders
+            </div>
+            <div className="empty-state">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <p>
+                    Saved tender records will appear here when a tender database
+                    or listing endpoint is connected.
+                </p>
+            </div>
+        </div>
     );
 }
 
-// Small helpers
+// REUSABLE COMPONENTS
 function MetricCard({ icon, color, value, label }) {
     return (
         <div className="metric-card">
@@ -541,9 +665,20 @@ function MetricCard({ icon, color, value, label }) {
 
 function SummaryLine({ label, value, color }) {
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '16px',
+            padding: '8px 0',
+            borderBottom: '1px solid #f0f0f0'
+        }}>
             <span style={{ color: '#666' }}>{label}:</span>
-            <span style={{ fontWeight: 600, color: color || '#162938' }}>{value}</span>
+            <span style={{
+                fontWeight: 600,
+                color: color || '#162938',
+                textAlign: 'right',
+                overflowWrap: 'anywhere'
+            }}>{value}</span>
         </div>
     );
 }
