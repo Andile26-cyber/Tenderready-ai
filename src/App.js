@@ -517,7 +517,7 @@ function OverviewTab() {
                     </ul>
                     <p className="hint">
                         Checklist results are based on the AWS response. Verify
-                        requirements before submitting a tender.
+                        requirements before submitting a tender. You can manually toggle items if needed.
                     </p>
                 </div>
             )}
